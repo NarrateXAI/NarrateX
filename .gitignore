@@ -178,3 +178,6 @@ test.ipynb
 
 # DB
 tweets.db
+
+# Main file
+main.py

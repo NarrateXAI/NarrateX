@@ -43,92 +43,16 @@ if __name__ == '__main__':
                 automation = XBot(driver_path=DRIVER_PATH, base_url=BASE_URL, cookie=TWITTER_COOKIES)
                 automation.login()
                 mentions = automation.scrape_mentions(username, tweet_limit=1, start_time="2025-01-01 00:00:00", end_time="2025-01-01 23:59:59")
-                print(mentions)
-                for mention in mentions:
-                    if mention == "No Data":
-                        print("No Data")
-                        break
-                    # Save to DB
-                    db = TweetDatabase()
-                    exist = db.check_if_exist(mention["tweet_id"])
-                    # if exist:
-                    #     print("Data already exist!")
-                    #     continue
-                    db.save_tweet(
-                        mention["tweet_id"],
-                        mention["username"],
-                        mention["content"],
-                        mention["created_at"],
-                        mention["href"]
-                    )
-                    message = mention['content'].replace(f"@{username}\n ", "")
-                    print("="*5,"Get AI Agent Response","="*5)
-                    response, video_path = asyncio.run(main(message))
-                    # response, video_path = """Arco Magna, my Martian origin planet, is a hub for interstellar research and trade. It's a sprawling colony with terraforming domes that simulate a comfortable environment. The sky is a deep crimson, and the landscape is dotted with futuristic architecture and research facilities. A city of interconnected domes, each containing a different ecosystem, stretches out towards the horizon.""", "C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\50342854308bff8236e9b0818c277ebdae79eb52f1af1e9ddf5b8517670b8507\\20250104_183203.mp4"
-                    if len(response) > 230:
-                        cut = response.split(".")[0:2]
-                        response = ".".join(cut) + "."
-                        print(response)
-                    if video_path == "Chat":
-                        print("="*5,"Post tweet","="*5)
-                        tweet = response + f"\n{mention['href']}"
-                        db.save_response(
-                            mention["tweet_id"],
-                            tweet,
-                            None,
-                            datetime.now()
-                        )
-                        db.close()
-                        automation.login()
-                        automation.send_tweet(
-                            tweet
-                        )
-                    else:
-                        print("="*5,"Post tweet","="*5)
-                        tweet = response + f"\n{mention['href']}"
-                        db.save_response(
-                            mention["tweet_id"],
-                            tweet,
-                            video_path,
-                            datetime.now()
-                        )
-                        db.close()
-                        automation.login()
-                        automation.upload_file(video_path)
-                        automation.send_tweet(
-                            tweet
-                        )
-            except Exception as e:
-                print(f"An error occurred: {e}")
-            finally:
-                automation.close()
-        elif prompt == "x schedule":
-            min = int(input("Input time (in minutes): "))
-            while True:
-                print(f"System sleep for {min} minutes")
-                time.sleep(min * 60)
-                print("System on")
-                try:
-                    print("="*5,"Get mentioned tweet","="*5)
-                    # Scrape mentions
-                    username = "MadivalVoyage"
-                    automation = XBot(driver_path=DRIVER_PATH, base_url=BASE_URL, cookie=TWITTER_COOKIES)
-                    automation.login()
-                    start = datetime.now() - timedelta(minutes=min)
-                    start = start.strftime("%Y-%m-%d %H:%M:%S")
-                    end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    mentions = automation.scrape_mentions(username, tweet_limit=1, start_time=start, end_time=end)
-                    print(mentions)
+                if not mentions:
+                    print("No Data")
+                else:
                     for mention in mentions:
-                        if mention == "No Data":
-                            print("No Data")
-                            break
                         # Save to DB
                         db = TweetDatabase()
                         exist = db.check_if_exist(mention["tweet_id"])
-                        if exist:
-                            print("Data already exist!")
-                            continue
+                        # if exist:
+                        #     print("Data already exist!")
+                        #     continue
                         db.save_tweet(
                             mention["tweet_id"],
                             mention["username"],
@@ -138,8 +62,8 @@ if __name__ == '__main__':
                         )
                         message = mention['content'].replace(f"@{username}\n ", "")
                         print("="*5,"Get AI Agent Response","="*5)
-                        # response, video_path = asyncio.run(main(message))
-                        response, video_path = """Arco Magna, my Martian origin planet, is a hub for interstellar research and trade. It's a sprawling colony with terraforming domes that simulate a comfortable environment. The sky is a deep crimson, and the landscape is dotted with futuristic architecture and research facilities. A city of interconnected domes, each containing a different ecosystem, stretches out towards the horizon.""", "C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\50342854308bff8236e9b0818c277ebdae79eb52f1af1e9ddf5b8517670b8507\\20250104_183203.mp4"
+                        response, video_path = asyncio.run(main(message))
+                        # response, video_path = """Arco Magna, my Martian origin planet, is a hub for interstellar research and trade. It's a sprawling colony with terraforming domes that simulate a comfortable environment. The sky is a deep crimson, and the landscape is dotted with futuristic architecture and research facilities. A city of interconnected domes, each containing a different ecosystem, stretches out towards the horizon.""", "C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\50342854308bff8236e9b0818c277ebdae79eb52f1af1e9ddf5b8517670b8507\\20250104_183203.mp4"
                         if len(response) > 230:
                             cut = response.split(".")[0:2]
                             response = ".".join(cut) + "."
@@ -173,10 +97,86 @@ if __name__ == '__main__':
                             automation.send_tweet(
                                 tweet
                             )
+            except Exception as e:
+                print(f"An error occurred: {e}")
+            finally:
+                automation.close()
+        elif prompt == "x schedule":
+            min = int(input("Input time (in minutes): "))
+            while True:
+                print("System on")
+                try:
+                    print("="*5,"Get mentioned tweet","="*5)
+                    # Scrape mentions
+                    username = "MadivalVoyage"
+                    automation = XBot(driver_path=DRIVER_PATH, base_url=BASE_URL, cookie=TWITTER_COOKIES)
+                    start = datetime.now() - timedelta(minutes=min) - timedelta(hours=7)
+                    start = start.strftime("%Y-%m-%d %H:%M:%S")
+                    end = datetime.now() - timedelta(hours=7) 
+                    end = end.strftime("%Y-%m-%d %H:%M:%S")
+                    print(start,end)
+                    automation.login()
+                    mentions = automation.scrape_mentions(username, tweet_limit=10, start_time=start, end_time=end)
+                    if not mentions:
+                        print("No Data")
+                    else:
+                        for mention in mentions:
+                            # Save to DB
+                            db = TweetDatabase()
+                            exist = db.check_if_exist(mention["tweet_id"])
+                            if exist:
+                                print("Data already exist!")
+                                continue
+                            db.save_tweet(
+                                mention["tweet_id"],
+                                mention["username"],
+                                mention["content"],
+                                mention["created_at"],
+                                mention["href"]
+                            )
+                            message = mention['content'].replace(f"@{username}\n ", "")
+                            print("="*5,"Get AI Agent Response","="*5)
+                            response, video_path = asyncio.run(main(message))
+                            # response, video_path = """Arco Magna, my Martian origin planet, is a hub for interstellar research and trade. It's a sprawling colony with terraforming domes that simulate a comfortable environment. The sky is a deep crimson, and the landscape is dotted with futuristic architecture and research facilities. A city of interconnected domes, each containing a different ecosystem, stretches out towards the horizon.""", "C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\50342854308bff8236e9b0818c277ebdae79eb52f1af1e9ddf5b8517670b8507\\20250104_183203.mp4"
+                            if len(response) > 230:
+                                cut = response.split(".")[0:2]
+                                response = ".".join(cut) + "."
+                                print(response)
+                            if video_path == "Chat":
+                                print("="*5,"Post tweet","="*5)
+                                tweet = response + f"\n{mention['href']}"
+                                db.save_response(
+                                    mention["tweet_id"],
+                                    tweet,
+                                    None,
+                                    datetime.now()
+                                )
+                                db.close()
+                                automation.login()
+                                automation.send_tweet(
+                                    tweet
+                                )
+                            else:
+                                print("="*5,"Post tweet","="*5)
+                                tweet = response + f"\n{mention['href']}"
+                                db.save_response(
+                                    mention["tweet_id"],
+                                    tweet,
+                                    video_path,
+                                    datetime.now()
+                                )
+                                db.close()
+                                automation.login()
+                                automation.upload_file(video_path)
+                                automation.send_tweet(
+                                    tweet
+                                )
                 except Exception as e:
                     print(f"An error occurred: {e}")
                 finally:
                     automation.close()
+                print(f"System sleep for {min} minutes")
+                time.sleep(min * 60)
         elif prompt == "exit":
             break
         else:
