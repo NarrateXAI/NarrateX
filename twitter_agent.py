@@ -7,6 +7,7 @@ from typing import Dict, List
 # Import the necessary module
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
 
 # Load environment variables from the .env file (if present)
 load_dotenv()
@@ -58,12 +59,14 @@ class XBot:
         post_button.click()
         time.sleep(3)
 
-    def scrape_mentions(self, username: str) -> List[Dict]:
+    def scrape_mentions(self, username: str, tweet_limit: int = 10, start_time: str = None, end_time: str = None) -> List[Dict]:
         """Scrape mentions of a given username on Twitter."""
         search_url = f"https://twitter.com/search?q=%40{username}&src=typed_query&f=live"
         self.driver.get(search_url)
         time.sleep(5)
 
+        start_dt = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S") if start_time else None
+        end_dt = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S") if end_time else None
         # Scroll to load more tweets
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         while True:
@@ -76,9 +79,11 @@ class XBot:
 
         # Extract tweets
         tweets_data = []
+        tweet_count = 0
         username_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.r-18u37iz.r-1wvb978")
         href_elements = self.driver.find_elements(By.CSS_SELECTOR, "div.css-175oi2r.r-18u37iz.r-1q142lx")
         tweet_elements = self.driver.find_elements(By.CSS_SELECTOR, "article[data-testid='tweet']")
+
         for tweet_element, href_element, username_element in zip(tweet_elements, href_elements, username_elements):
             try:
                 tweet_text = tweet_element.find_element(By.CSS_SELECTOR, "div[data-testid='tweetText']").text
@@ -86,13 +91,24 @@ class XBot:
                 href_value = anchor_element.get_attribute("href")
                 time_element = href_element.find_element(By.TAG_NAME, "time")
                 datetime_value = time_element.get_attribute("datetime")
+                datetime_value_dt = datetime.strptime(datetime_value, "%Y-%m-%dT%H:%M:%S.%fZ")
                 username = username_element.find_element(By.TAG_NAME, "span").text
+
+                # Check time range
+                if start_dt and datetime_value_dt < start_dt:
+                    continue
+                if end_dt and datetime_value_dt > end_dt:
+                    continue
                 tweets_data.append({
-                    "href": href_value,
-                    "datetime": datetime_value,
+                    "tweet_id" : href_value.split("/")[-1],
                     "username": username,
-                    "tweet": tweet_text
+                    "content": tweet_text,
+                    "created_at": datetime_value,
+                    "href": href_value
                 })
+                tweet_count+=1
+                if tweet_count == tweet_limit:
+                    break
             except Exception as e:
                 print(f"Error extracting tweet: {e}")
         return tweets_data
@@ -127,7 +143,7 @@ if __name__ == "__main__":
 
         # Scrape mentions
         username = "MadivalVoyage"
-        mentions = automation.scrape_mentions(username)
+        mentions = automation.scrape_mentions(username, tweet_limit=1, start_time="2024-12-31 00:00:00", end_time="2024-12-31 23:59:59")
         for mention in mentions:
             print(mention)
 
