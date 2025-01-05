@@ -1,8 +1,30 @@
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
-from markdown import to_markdown
 
-from character import *
+from .character import *
+
+
+def to_markdown(data, indent=0):
+    markdown = ""
+    if isinstance(data, BaseModel):
+        data = data.model_dump()
+    if isinstance(data, dict):
+        for key, value in data.items():
+            markdown += f"{'#' * (indent + 2)} {key.upper()}\n"
+            if isinstance(value, (dict, list, BaseModel)):
+                markdown += to_markdown(value, indent + 1)
+            else:
+                markdown += f"{value}\n\n"
+    elif isinstance(data, list):
+        for item in data:
+            if isinstance(item, (dict, list, BaseModel)):
+                markdown += to_markdown(item, indent)
+            else:
+                markdown += f"- {item}\n"
+        markdown += "\n"
+    else:
+        markdown += f"{data}\n\n"
+    return markdown
 
 class AgentModule:
     def __init__(self, model: str):
@@ -31,7 +53,7 @@ class AgentModule:
     def create_t2v_agent(self, model: str) -> Agent:
         t2v_agent = Agent(
             model,
-            deps_type=Planets,
+            deps_type=Locations,
             result_type=self.T2V,
             system_prompt=
             '''You are a helpful AI designed to create vivid text-to-video prompts based on the response from an AI astronaut character. 
@@ -41,8 +63,8 @@ class AgentModule:
         )
 
         @t2v_agent.system_prompt
-        async def add_planet_details(ctx: RunContext[Planets]) -> str:
-            return f"Planets details: {to_markdown(ctx.deps)}"
+        async def add_locations_details(ctx: RunContext[Locations]) -> str:
+            return f"Locations details: {to_markdown(ctx.deps)}"
 
         return t2v_agent
 

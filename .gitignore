@@ -172,6 +172,7 @@ cython_debug/
 
 # Venv
 agents/
+.logfire/
 
 # Experiment files
 test.ipynb
@@ -181,3 +182,7 @@ tweets.db
 
 # Main file
 main.py
+
+# Prod folder
+prod/
+example/

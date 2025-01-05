@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -17,7 +19,27 @@ unix_time_plus_2_hours = int(time.time() + 2 * 60 * 60)
 
 class XBot:
     def __init__(self, driver_path: str, base_url: str, cookie: str):
-        self.driver = webdriver.Chrome(service=webdriver.ChromeService(executable_path=driver_path))
+        # Configure Chrome options for VPS
+        options = Options()
+        options.add_argument("--headless")  # Run in headless mode (no GUI)
+        options.add_argument("--no-sandbox")  # Required for VPS environments
+        options.add_argument("--disable-dev-shm-usage")  # Handle limited shared memory
+        options.add_argument("--disable-gpu")  # Disable GPU rendering
+        options.add_argument("--window-size=1920,1080")  # Set a virtual screen size
+        options.add_argument("--disable-extensions")  # Disable extensions for speed
+        options.add_argument("--disable-infobars")  # Disable "Chrome is being controlled by automation" bar
+        options.add_argument("--incognito")  # Launch Chrome in incognito mode
+        options.add_argument("--disable-blink-features=AutomationControlled")  # Make Selenium less detectable
+        options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
+        options.add_argument("--disable-logging")  # Suppress logs
+        options.add_argument("--mute-audio")  # Mute audio
+        options.add_argument("--disable-background-timer-throttling")  # Avoid delays
+        options.add_argument("--disable-renderer-backgrounding")  # Improve performance on low-resources
+        options.add_argument("--disable-backgrounding-occluded-windows")  # Similar performance boost
+        
+        # Initialize the WebDriver
+        service = Service(executable_path=driver_path)
+        self.driver = webdriver.Chrome(service=service, options=options)
         self.base_url = base_url
         self.cookie = {
                             'domain': '.x.com',

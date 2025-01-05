@@ -30,6 +30,16 @@ class TweetDatabase:
         ''')
         self.conn.commit()
 
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS automated_tweets (
+                automated_response_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                response_content TEXT,
+                response_video TEXT,
+                response_created_at TEXT
+            )
+        ''')
+        self.conn.commit()
+
     def check_if_exist(self, tweet_id):
         # Check if the tweet already exists
         self.cursor.execute('SELECT tweet_id FROM tweets WHERE tweet_id = ?', (tweet_id,))
@@ -106,6 +116,20 @@ class TweetDatabase:
         print(f"Response to tweet ID {tweet_id} added to the database.")
         return True
 
+    def save_automated_tweet(self, response_content, response_video, response_created_at):
+        """
+        Save a response to a tweet in the database.
+        """
+
+        # Insert the response into the responses table
+        self.cursor.execute('''
+            INSERT INTO automated_tweets (response_content, response_video, response_created_at)
+            VALUES (?, ?, ?)
+        ''', (response_content, response_video, response_created_at))
+        self.conn.commit()
+        print(f"Response automated tweet response added to the database.")
+        return True
+    
     def close(self):
         """
         Close the database connection.
@@ -145,6 +169,12 @@ if __name__ == "__main__":
     # Save the response
     db.save_response(
         response_data["tweet_id"],
+        response_data["response_content"],
+        response_data["response_video"],
+        response_data["response_created_at"]
+    )
+
+    db.save_automated_tweet(
         response_data["response_content"],
         response_data["response_video"],
         response_data["response_created_at"]
