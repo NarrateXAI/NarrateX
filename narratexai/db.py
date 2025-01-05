@@ -130,55 +130,19 @@ class TweetDatabase:
         print(f"Response automated tweet response added to the database.")
         return True
     
+    def count_tweets_in_one_day(self, date):
+        """
+        Count the number of tweets created on a specific date.
+        """
+        self.cursor.execute('''
+            SELECT COUNT(*) FROM tweets WHERE DATE(created_at) = ?
+        ''', (date,))
+        count = self.cursor.fetchone()[0]
+        print(f"Number of tweets on {date}: {count}")
+        return count
+
     def close(self):
         """
         Close the database connection.
         """
         self.conn.close()
-
-# Example usage
-if __name__ == "__main__":
-    db = TweetDatabase()
-
-    # Simulated tweet data
-    tweet_data = {
-        "tweet_id": "1874057709466902637",
-        "username": "@mdvx_test",
-        "content": "@MadivalVoyage\n hey, how are you?",
-        "created_at": "2024-12-31T11:39:10.000Z",
-        "href": "https://x.com/mdvx_test/status/1874057709466902637"
-    }
-
-    # Save the tweet
-    db.save_tweet(
-        tweet_data["tweet_id"],
-        tweet_data["username"],
-        tweet_data["content"],
-        tweet_data["created_at"],
-        tweet_data["href"]
-    )
-
-    # Simulated response data
-    response_data = {
-        "tweet_id": "1874057709466902637",  # This must match an existing tweet ID
-        "response_content": "This is a response to the sample tweet.",
-        "response_video": '''C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\8f54fafe71e36370d8e258df80931ca42aa0561b926f729c0ac7c773a66e7e65\\20250101_163450.mp4''',
-        "response_created_at": "2024-12-31T12:30:00"
-    }
-
-    # Save the response
-    db.save_response(
-        response_data["tweet_id"],
-        response_data["response_content"],
-        response_data["response_video"],
-        response_data["response_created_at"]
-    )
-
-    db.save_automated_tweet(
-        response_data["response_content"],
-        response_data["response_video"],
-        response_data["response_created_at"]
-    )
-
-    # Close the connection
-    db.close()
