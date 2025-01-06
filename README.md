@@ -1,19 +1,31 @@
 # NarrateXAI
 
 <div align="center">
-  <img src="./src/img/narratex_nobg.png" alt="NarrateXAI Banner" width="100%" />
+  <img src="./src/img/narratex_nobg.png" alt="NarrateXAI Banner" width="375" />
 </div>
 
 NarrateXAI is a **Text-to-Video AI Agent Storyline Framework**, built on top of the powerful [**PydanticAI**](https://ai.pydantic.dev/) framework. It brings your narratives to life by combining character-driven storytelling with cutting-edge AI technology.
 
 ---
 
+## Overview
+
+<div align="center">
+  <img src="./src/img/workflow.svg" alt="NarrateXAI Workflow" width="100%" />
+</div>
+
 ## Features
 
-- **Character Lore Templates**: Define intricate characters and backstories for enriched storytelling.
-- **Text-to-Video**: Seamlessly generate visuals aligned with your narrative.
-- **Custom AI Agents**: Build agents capable of interpreting and visualizing text-based stories.
-- **Scalable Framework**: Suitable for simple prototypes to large-scale applications.
+| **Feature**                        | **Description**                                                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Character Lore**                 | Define rich, structured backstories and traits for your AI agents to enhance storytelling depth.                  |
+| **Prompt Classification AI Agent** | Automatically classify user prompts into categories like "Chat" or "Vision" for tailored responses.               |
+| **Character AI Agents**            | Generate responses based on the defined character lore, ensuring consistency in personality.                      |
+| **Text-to-Video AI Agent**         | Convert narrative responses into videos using integrated text-to-video APIs like CogVideo, Sora, or Veo.\*        |
+| **Text-to-Video Prompt Generator** | Create detailed prompts for external text-to-video services when visual storytelling is needed.                   |
+| **API Integration**                | Seamlessly integrates with text-to-video AI providers (e.g., CogVideoX, Sora*, Veo*) to generate dynamic visuals. |
+
+_\*API availability may vary based on provider support._
 
 ---
 
@@ -27,7 +39,7 @@ NarrateXAI is a **Text-to-Video AI Agent Storyline Framework**, built on top of 
 
 ---
 
-## Quick Start
+## Quick Start Guide
 
 ### Prerequisites
 
@@ -110,5 +122,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Support
 
 For questions or issues, visit our [GitHub repository](https://github.com/NarrateXAI/NarrateX) or open an issue.
-
-Happy storytelling! 🚀
