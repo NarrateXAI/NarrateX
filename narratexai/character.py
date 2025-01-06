@@ -18,6 +18,7 @@ class CharacterLore(BaseModel):
     setting_connection: Dict
     storyline_and_missions: Dict
     locations: List
+    usage_notes: Dict
 
 class Locations(BaseModel):
   locations: List
