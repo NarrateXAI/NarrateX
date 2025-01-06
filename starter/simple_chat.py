@@ -14,7 +14,7 @@ async def main(prompt):
     print("Prompt Classification:", classification_result.data.classification )
     print("$Agents",result.data)
     if classification_result.data.classification != "Chat":
-        t2v_result = await agent.t2v_agent.run(f"Generate prompt for text-to-video generator model using this AI Agent response: {result.data}", deps=location)
+        t2v_result = await agent.t2v_prompt_agent.run(f"Generate prompt for text-to-video generator model using this AI Agent response: {result.data}", deps=location)
         print("T2V Prompt:",t2v_result.data.prompt)
         t2v_model = T2VModel()
         try_cnt = 0

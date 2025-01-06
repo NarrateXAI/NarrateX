@@ -30,7 +30,7 @@ class AgentModule:
     def __init__(self, model: str):
         self.model = model
         self.classification_agent = self.create_classification_agent(model=self.model)
-        self.t2v_agent = self.create_t2v_agent(model=self.model)
+        self.t2v_prompt_agent = self.create_t2v_agent(model=self.model)
         self.character_agent = self.create_character_agent(model=self.model)
 
     class Classification(BaseModel):
