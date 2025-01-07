@@ -186,3 +186,7 @@ main.py
 # Prod folder
 prod/
 example/
+
+# Chrome Profile Folder
+chrome_profile_1/
+chrome_profile_2/

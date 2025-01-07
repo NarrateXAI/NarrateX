@@ -18,19 +18,16 @@ import time
 unix_time_plus_2_hours = int(time.time() + 2 * 60 * 60)
 
 class XBot:
-    def __init__(self, driver_path: str, base_url: str, cookie: str):
+    def __init__(self, driver_path: str, base_url: str, cookie: str, profile_name:str = "profile1"):
         # Configure Chrome options for VPS
         options = Options()
-        options.add_argument("--headless")  # Run in headless mode (no GUI)
-        options.add_argument("--no-sandbox")  # Required for VPS environments
-        options.add_argument("--disable-dev-shm-usage")  # Handle limited shared memory
-        options.add_argument("--disable-gpu")  # Disable GPU rendering
-        options.add_argument("--window-size=1920,1080")  # Set a virtual screen size
-        options.add_argument("--disable-extensions")  # Disable extensions for speed
-        options.add_argument("--disable-infobars")  # Disable "Chrome is being controlled by automation" bar
-        options.add_argument("--disable-blink-features=AutomationControlled")  # Make Selenium less detectable
-        options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
-        options.add_argument("--disable-logging")  # Suppress logs
+        user_data_dir = os.path.join(os.getcwd(), profile_name)  # Create unique profile directories
+        options.add_argument(f"--user-data-dir={user_data_dir}")  # Use unique browser profile
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--headless")  # Optional: Run in headless mode
+        options.add_argument("--disable-gpu")  # Optional: For headless stability
+
         
         # Initialize the WebDriver
         service = Service(executable_path=driver_path)
@@ -133,36 +130,3 @@ class XBot:
     def close(self):
         """Close the WebDriver session."""
         self.driver.quit()
-
-
-
-TWITTER_COOKIES=os.getenv('TWITTER_COOKIES')
-BASE_URL = os.getenv('BASE_URL')
-DRIVER_PATH = os.getenv('DRIVER_PATH') # Update with your ChromeDriver path
-FILE_PATH = "C:\\Users\\Alfian\\AppData\\Local\\Temp\\gradio\\8f54fafe71e36370d8e258df80931ca42aa0561b926f729c0ac7c773a66e7e65\\20250101_163450.mp4"
-TWEET_CONTENT = (
-    "Hello, X! 2 This is an automated tweet using Selenium with quote tweet.\n"
-    "https://x.com/mdvx_test/status/1872580512684101664"
-)
-
-if __name__ == "__main__":
-    automation = XBot(driver_path=DRIVER_PATH, base_url=BASE_URL, cookie=TWITTER_COOKIES)
-
-    try:
-        # Open URL and set cookie
-        automation.login()
-        # Upload file
-        automation.upload_file(FILE_PATH)
-        # Send tweet
-        automation.send_tweet(
-            TWEET_CONTENT
-        )
-
-        # Scrape mentions
-        username = "MadivalVoyage"
-        mentions = automation.scrape_mentions(username, tweet_limit=1, start_time="2024-12-31 00:00:00", end_time="2024-12-31 23:59:59")
-        for mention in mentions:
-            print(mention)
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
