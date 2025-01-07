@@ -1,11 +1,7 @@
 from narratexai import *
 from .char import *
 
-import os
 import asyncio
-from datetime import datetime, timedelta
-import random
-import time
 
 async def main(prompt):
     agent = AgentModule("openai:gpt-4o-mini")
