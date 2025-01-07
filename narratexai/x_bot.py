@@ -73,7 +73,7 @@ class XBot:
         post_button.click()
         time.sleep(3)
 
-    def scrape_mentions(self, username: str, tweet_limit: int = 10, start_time: str = None, end_time: str = None) -> List[Dict]:
+    def scrape_mentions(self, username: str, tweet_limit: int = 100, start_time: str = None, end_time: str = None) -> List[Dict]:
         """Scrape mentions of a given username on Twitter."""
         search_url = f"https://twitter.com/search?q=%40{username}&src=typed_query&f=live"
         self.driver.get(search_url)
@@ -82,14 +82,13 @@ class XBot:
         start_dt = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S") if start_time else None
         end_dt = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S") if end_time else None
         # Scroll to load more tweets
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-        while True:
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(3)  # Wait for content to load
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
+        self.driver.execute_script("return document.body.scrollHeight")
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(5)  # Wait for content to load
+        self.driver.execute_script("return document.body.scrollHeight")
+            # if new_height == last_height:
+            #     break
+            # last_height = new_height
 
         # Extract tweets
         tweets_data = []
@@ -109,6 +108,8 @@ class XBot:
                 username = username_element.find_element(By.TAG_NAME, "span").text
 
                 # Check time range
+                print(tweet_text)
+                print(datetime_value_dt)
                 if start_dt and datetime_value_dt < start_dt:
                     continue
                 if end_dt and datetime_value_dt > end_dt:
